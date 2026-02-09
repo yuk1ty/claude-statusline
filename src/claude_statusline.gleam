@@ -17,8 +17,7 @@ pub fn main() {
     |> string.join("\n")
 
   case json.parse(from: input, using: decode.dynamic) {
-    Error(_) -> io.println("--")
-    // JSONが壊れてたら無難に
+    Error(_) -> io.println("Error happened while parsing")
     Ok(value) -> render(value)
   }
 }
