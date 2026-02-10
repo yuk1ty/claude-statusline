@@ -29,7 +29,7 @@ gleam run < session.json
 
 The input JSON should contain the following structure:
 
-````json
+```json
 {
   "cwd": "/current/working/directory",
   "session_id": "abc123...",
@@ -90,7 +90,7 @@ The input JSON should contain the following structure:
 ```sh
 gleam run   # Run the project
 gleam test  # Run the tests
-````
+```
 
 ## Deploy
 
