@@ -21,7 +21,19 @@ pub fn main() {
   }
 }
 
-fn render(root: Dynamic) -> Nil {
+type StatusLine {
+  Statusline(
+    model: String,
+    used_percentage: Int,
+    used_usd_cost: Float,
+    input_tokens: Int,
+    total_input_tokens: Int,
+    output_tokens: Int,
+    total_output_tokens: Int,
+  )
+}
+
+fn build_status_line(root: Dynamic) -> StatusLine {
   let model =
     root
     |> decode_model
@@ -57,21 +69,35 @@ fn render(root: Dynamic) -> Nil {
     |> decode_total_output_tokens
     |> result.unwrap(0)
 
+  Statusline(
+    model,
+    pct,
+    usg,
+    input_tokens,
+    total_input_tokens,
+    output_tokens,
+    total_output_tokens,
+  )
+}
+
+fn render(root: Dynamic) -> Nil {
+  let status = build_status_line(root)
+
   io.println(
     "🤖 "
-    <> model
+    <> status.model
     <> " | 🧠 "
-    <> int.to_string(pct)
+    <> int.to_string(status.used_percentage)
     <> "% | 🔥 \u{eab4} "
-    <> format_tokens(input_tokens)
+    <> format_tokens(status.input_tokens)
     <> "/"
-    <> format_tokens(total_input_tokens)
+    <> format_tokens(status.total_input_tokens)
     <> " \u{eab7} "
-    <> format_tokens(output_tokens)
+    <> format_tokens(status.output_tokens)
     <> "/"
-    <> format_tokens(total_output_tokens)
+    <> format_tokens(status.total_output_tokens)
     <> " | 💸 $"
-    <> format_cost(usg),
+    <> format_cost(status.used_usd_cost),
   )
 }
 
