@@ -42,9 +42,19 @@ fn render(root: Dynamic) -> Nil {
     |> decode_input_tokens
     |> result.unwrap(0)
 
+  let total_input_tokens =
+    root
+    |> decode_total_input_tokens
+    |> result.unwrap(0)
+
   let output_tokens =
     root
     |> decode_output_tokens
+    |> result.unwrap(0)
+
+  let total_output_tokens =
+    root
+    |> decode_total_output_tokens
     |> result.unwrap(0)
 
   io.println(
@@ -52,11 +62,14 @@ fn render(root: Dynamic) -> Nil {
     <> model
     <> " | 🧠 "
     <> int.to_string(pct)
-    <> "% context"
-    <> " | 🔥 \u{eab4} "
+    <> "% | 🔥 \u{eab4} "
     <> format_tokens(input_tokens)
+    <> "/"
+    <> format_tokens(total_input_tokens)
     <> " \u{eab7} "
     <> format_tokens(output_tokens)
+    <> "/"
+    <> format_tokens(total_output_tokens)
     <> " | 💸 $"
     <> format_cost(usg),
   )
@@ -97,10 +110,27 @@ fn decode_input_tokens(root: Dynamic) -> Result(Int, List(decode.DecodeError)) {
   decode.run(root, tokens_decoder)
 }
 
+fn decode_total_input_tokens(
+  root: Dynamic,
+) -> Result(Int, List(decode.DecodeError)) {
+  let tokens_decoder =
+    decode.at(["context_window", "total_input_tokens"], decode.int)
+
+  decode.run(root, tokens_decoder)
+}
+
 fn decode_output_tokens(root: Dynamic) -> Result(Int, List(decode.DecodeError)) {
   let tokens_decoder =
     decode.at(["context_window", "current_usage", "output_tokens"], decode.int)
 
+  decode.run(root, tokens_decoder)
+}
+
+fn decode_total_output_tokens(
+  root: Dynamic,
+) -> Result(Int, List(decode.DecodeError)) {
+  let tokens_decoder =
+    decode.at(["context_window", "total_output_tokens"], decode.int)
   decode.run(root, tokens_decoder)
 }
 
